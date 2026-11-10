@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Məlumat və Referans Bazası</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        header p {
+            color: #7f8c8d;
+        }
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            gap: 10px;
+        }
+        .search-container input {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-container input:focus {
+            border-color: #3498db;
+        }
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .cat-btn {
+            padding: 8px 16px;
+            border: none;
+            background-color: #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .cat-btn.active, .cat-btn:hover {
+            background-color: #3498db;
+            color: white;
+        }
+        .grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-tag {
+            font-size: 12px;
+            color: #3498db;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .card-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .card-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        .card-link {
+            display: inline-block;
+            text-decoration: none;
+            color: white;
+            background-color: #2ecc71;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .card-link:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Məlumat və Referans Bazası</h1>
+        <p>Faydalı resurslar, keçidlər və öyrənmə materilları toplusu</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Axtarış edin (məs: Proqramlaşdırma, Kitab, Dizayn)...">
+    </div>
+
+    <div class="categories">
+        <button class="cat-btn active" onclick="filterCategory('all')">Bütün Kateqoriyalar</button>
+        <button class="cat-btn" onclick="filterCategory('Təhsil')">Təhsil</button>
+        <button class="cat-btn" onclick="filterCategory('Texnologiya')">Texnologiya</button>
+        <button class="cat-btn" onclick="filterCategory('Dizayn')">Dizayn</button>
+    </div>
+
+    <div class="grid" id="cardsGrid">
+        <!-- Kartlar JavaScript ilə bura yüklənəcək -->
+    </div>
+
+    <script>
+        const resources = [
+            {
+                title: "W3Schools",
+                category: "Təhsil",
+                description: "Veb proqramlaşdırma (HTML, CSS, JS) öyrənmək üçün dünyanın ən böyük pulsuz tədris saytı.",
+                link: "https://www.w3schools.com"
+            },
+            {
+                title: "Canva",
+                category: "Dizayn",
+                description: "Sosial media postları, təqdimatlar və posterlər hazırlamaq üçün asan onlayn dizayn aləti.",
+                link: "https://www.canva.com"
+            },
+            {
+                title: "GitHub",
+                category: "Texnologiya",
+                description: "Kodlarınızı saxlamaq, şəxsi saytlarınızı pulsuz yayınlamaq üçün platforma.",
+                link: "https://github.com"
+            },
+            {
+                title: "Khan Academy",
+                category: "Təhsil",
+                description: "Riyaziyyat, fizika, proqramlaşdırma və digər fənlər üzrə pulsuz onlayn dərslər.",
+                link: "https://www.khanacademy.org"
+            },
+            {
+                title: "Unsplash",
+                category: "Dizayn",
+                description: "Pulsuz və yüksək keyfiyyətli stok şəkillər bazası.",
+                link: "https://unsplash.com"
+            }
+        ];
+
+        function displayResources(items) {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+
+            if(items.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Heç bir məlumat tapılmadı.</p>';
+                return;
+            }
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div>
+                        <div class="card-tag">${item.category}</div>
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-desc">${item.description}</div>
+                    </div>
+                    <a href="${item.link}" target="_blank" class="card-link">Keçid Et</a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        displayResources(resources);
+
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const text = e.target.value.toLowerCase();
+            const filtered = resources.filter(res => 
+                res.title.toLowerCase().includes(text) || 
+                res.description.toLowerCase().includes(text) ||
+                res.category.toLowerCase().includes(text)
+            );
+            displayResources(filtered);
+        });
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if(cat === 'all') {
+                displayResources(resources);
+            } else {
+                const filtered = resources.filter(res => res.category === cat);
+                displayResources(filtered);
+            }
+        }
+    </script>
+</body>
+</html>
